@@ -1,14 +1,12 @@
-import { VercelRequest, VercelResponse } from "@vercel/node";
+import { Router } from "express";
 import { db } from "./_firebase";
-import express from "express";
-import cors from "cors";
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+const router = Router();
+
+
 
 // Agregar ingreso a un mes
-app.post("/:mesId", async (req, res) => {
+router.post("/:mesId", async (req, res) => {
   const { mesId } = req.params;
   const ingreso = req.body;
   if (!ingreso.tipo || ingreso.valor === undefined)
@@ -24,7 +22,7 @@ app.post("/:mesId", async (req, res) => {
 });
 
 // Obtener ingresos de un mes
-app.get("/:mesId", async (req, res) => {
+router.get("/:mesId", async (req, res) => {
   const { mesId } = req.params;
   const snapshot = await db
     .collection("meses")
@@ -36,4 +34,4 @@ app.get("/:mesId", async (req, res) => {
   res.send(ingresos);
 });
 
-export default (req: VercelRequest, res: VercelResponse) => app(req, res);
+export default router;

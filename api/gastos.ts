@@ -1,14 +1,10 @@
-import { VercelRequest, VercelResponse } from "@vercel/node";
+import { Router } from "express";
 import { db } from "./_firebase";
-import express from "express";
-import cors from "cors";
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+const router = Router();
 
 // Agregar gasto
-app.post("/:mesId", async (req, res) => {
+router.post("/:mesId", async (req, res) => {
   const { mesId } = req.params;
   const gasto = req.body;
   if (!gasto.title || gasto.valor === undefined)
@@ -19,11 +15,11 @@ app.post("/:mesId", async (req, res) => {
 });
 
 // Obtener gastos
-app.get("/:mesId", async (req, res) => {
+router.get("/:mesId", async (req, res) => {
   const { mesId } = req.params;
   const snapshot = await db.collection("meses").doc(mesId).collection("gastos").get();
   const gastos = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   res.send(gastos);
 });
 
-export default (req: VercelRequest, res: VercelResponse) => app(req, res);
+export default router;

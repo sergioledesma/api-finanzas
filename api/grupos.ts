@@ -1,14 +1,11 @@
-import { VercelRequest, VercelResponse } from "@vercel/node";
+import { Router } from "express";
 import { db } from "./_firebase";
-import express from "express";
-import cors from "cors";
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+const router = Router();
+
 
 // Crear grupo
-app.post("/", async (req, res) => {
+router.post("/", async (req, res) => {
   const { nombre } = req.body;
   if (!nombre) return res.status(400).send("Nombre requerido");
 
@@ -17,14 +14,14 @@ app.post("/", async (req, res) => {
 });
 
 // Obtener todos los grupos
-app.get("/", async (_, res) => {
+router.get("/", async (_, res) => {
   const snapshot = await db.collection("grupos").get();
   const grupos = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   res.send(grupos);
 });
 
 // Editar grupo
-app.patch("/:id", async (req, res) => {
+router.patch("/:id", async (req, res) => {
   const { id } = req.params;
   const { nombre } = req.body;
   await db.collection("grupos").doc(id).update({ nombre });
@@ -32,10 +29,10 @@ app.patch("/:id", async (req, res) => {
 });
 
 // Eliminar grupo
-app.delete("/:id", async (req, res) => {
+router.delete("/:id", async (req, res) => {
   const { id } = req.params;
   await db.collection("grupos").doc(id).delete();
   res.send("Grupo eliminado");
 });
 
-export default (req: VercelRequest, res: VercelResponse) => app(req, res);
+export default router;

@@ -1,14 +1,10 @@
-import { VercelRequest, VercelResponse } from "@vercel/node";
+import { Router } from "express";
 import { db } from "./_firebase";
-import express from "express";
-import cors from "cors";
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+const router = Router();
 
 // Crear categoría
-app.post("/", async (req, res) => {
+router.post("/", async (req, res) => {
   const { nombre } = req.body;
   if (!nombre) return res.status(400).send("Nombre requerido");
 
@@ -17,14 +13,14 @@ app.post("/", async (req, res) => {
 });
 
 // Obtener todas las categorías
-app.get("/", async (_, res) => {
+router.get("/", async (_, res) => {
   const snapshot = await db.collection("categorias").get();
   const categorias = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   res.send(categorias);
 });
 
 // Editar categoría
-app.patch("/:id", async (req, res) => {
+router.patch("/:id", async (req, res) => {
   const { id } = req.params;
   const { nombre } = req.body;
   await db.collection("categorias").doc(id).update({ nombre });
@@ -32,10 +28,10 @@ app.patch("/:id", async (req, res) => {
 });
 
 // Eliminar categoría
-app.delete("/:id", async (req, res) => {
+router.delete("/:id", async (req, res) => {
   const { id } = req.params;
   await db.collection("categorias").doc(id).delete();
   res.send("Categoría eliminada");
 });
 
-export default (req: VercelRequest, res: VercelResponse) => app(req, res);
+export default router;

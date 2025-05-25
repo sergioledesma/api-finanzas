@@ -1,13 +1,9 @@
-import { VercelRequest, VercelResponse } from "@vercel/node";
+import { Router } from "express";
 import { db } from "./_firebase";
-import express from "express";
-import cors from "cors";
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+const router = Router();
 
-app.post("/:mesId", async (req, res) => {
+router.post("/:mesId", async (req, res) => {
   const { mesId } = req.params;
 
   // Gastos
@@ -36,4 +32,4 @@ app.post("/:mesId", async (req, res) => {
   res.send({ totalGastos, totalIngresos, restante });
 });
 
-export default (req: VercelRequest, res: VercelResponse) => app(req, res);
+export default router;

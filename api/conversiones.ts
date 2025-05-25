@@ -1,14 +1,10 @@
-import { VercelRequest, VercelResponse } from "@vercel/node";
+import { Router } from "express";
 import { db } from "./_firebase";
-import express from "express";
-import cors from "cors";
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+const router = Router();
 
 // Agregar o actualizar conversión para un mes
-app.post("/:mesId", async (req, res) => {
+router.post("/:mesId", async (req, res) => {
   const { mesId } = req.params;
   const { tipo_cambio, valor, select } = req.body;
   if (!tipo_cambio || valor === undefined)
@@ -25,7 +21,7 @@ app.post("/:mesId", async (req, res) => {
 });
 
 // Obtener conversión de un mes
-app.get("/:mesId", async (req, res) => {
+router.get("/:mesId", async (req, res) => {
   const { mesId } = req.params;
   const doc = await db
     .collection("meses")
@@ -38,4 +34,4 @@ app.get("/:mesId", async (req, res) => {
   res.send({ id: doc.id, ...doc.data() });
 });
 
-export default (req: VercelRequest, res: VercelResponse) => app(req, res);
+export default router;
