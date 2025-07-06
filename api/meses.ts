@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { db } from "./_firebase";
+import { validarJWT } from "./middlewares/authMiddleware";
 
 const router = Router();
 // Crear un nuevo mes
@@ -12,7 +13,7 @@ router.post("/", async (req, res) => {
 });
 
 // Obtener todos los meses
-router.get("/", async (_, res) => {
+router.get("/", validarJWT, async (_, res) => {
   const snapshot = await db.collection("meses").get();
   const meses = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   res.send(meses);

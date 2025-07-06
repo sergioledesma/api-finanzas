@@ -10,6 +10,7 @@ import conversiones from "./api/conversiones";
 import grupos from "./api/grupos";
 import meses from "./api/meses";
 import calcular from "./api/calcular";
+import validarJWT from "./api/validarJWT";
 
 const app = express();
 app.use(cors());
@@ -23,6 +24,7 @@ app.use("/api/categorias", categorias);
 app.use("/api/conversiones", conversiones);
 app.use("/api/grupos", grupos);
 app.use("/api/calcular", calcular);
+app.use("/api/validarjwt", validarJWT);
 
 // Servidor
 const PORT = process.env.PORT || 3000;
