@@ -1,22 +1,28 @@
 import { Router } from "express";
 import { db } from "./_firebase";
+import { mesIdByFecha } from "./middlewares/mesIdByFecha";
 
 const router = Router();
 
 // Agregar gasto
-router.post("/:mesId", async (req, res) => {
-  const { mesId } = req.params;
+router.post("/:date",mesIdByFecha, async (req, res) => {
+  const mesId = (req as any).mesId;
   const gasto = req.body;
   if (!gasto.title || gasto.valor === undefined)
     return res.status(400).send("title y valor requeridos");
 
-  await db.collection("meses").doc(mesId).collection("gastos").add(gasto);
+  await db
+    .collection("meses")
+    .doc(mesId)
+    .collection("gastos")
+    .add(gasto);
+    
   res.send("Gasto agregado");
 });
 
 // Obtener gastos
-router.get("/:mesId", async (req, res) => {
-  const { mesId } = req.params;
+router.get("/:date",mesIdByFecha, async (req, res) => {
+  const mesId = (req as any).mesId;
   const snapshot = await db.collection("meses").doc(mesId).collection("gastos").get();
   // Explicitly type gasto to include possible properties
   type Gasto = { id: string; category?: string; grupo?: string; [key: string]: any };
@@ -54,6 +60,26 @@ router.get("/:mesId", async (req, res) => {
     grupo: gasto.id && gasto.grupo ? gruposMap[gasto.grupo] || null : null,
   }));
   res.send(gastosCompletos);
+});
+
+//editar gastos
+router.put("/:date/:gastoId", mesIdByFecha, async (req, res) => {
+  const mesId = (req as any).mesId;
+  const { gastoId } = req.params;
+  const data = req.body;
+
+  try {
+    await db
+      .collection("meses")
+      .doc(mesId)
+      .collection("gastos")
+      .doc(gastoId)
+      .update(data);
+
+    res.send("gasto actualizado");
+  } catch (err) {
+    res.status(404).send("gasto no encontrado o error al actualizar");
+  }
 });
 
 export default router;

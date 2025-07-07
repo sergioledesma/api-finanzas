@@ -20,7 +20,7 @@ router.get("/", async (_, res) => {
 });
 
 // Editar categoría
-router.patch("/:id", async (req, res) => {
+router.put("/:id", async (req, res) => {
   const { id } = req.params;
   const { nombre } = req.body;
   await db.collection("categorias").doc(id).update({ nombre });

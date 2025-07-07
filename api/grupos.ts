@@ -21,7 +21,7 @@ router.get("/", async (_, res) => {
 });
 
 // Editar grupo
-router.patch("/:id", async (req, res) => {
+router.put("/:id", async (req, res) => {
   const { id } = req.params;
   const { nombre } = req.body;
   await db.collection("grupos").doc(id).update({ nombre });
